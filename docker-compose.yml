@@ -179,6 +179,41 @@ services:
             chmod 777 /app/data &&
             chown -R $$(id -u):$$(id -g) /app/data 2>/dev/null || true &&
             dotnet EducaOnline.Conteudo.API.dll"
+    bff:
+        build:
+            context: .
+            dockerfile: ./backend/src/api_gateways/EducaOnline.Bff/Dockerfile
+        container_name: educaonline-bff
+        ports:
+            - "5051:8080"
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Docker
+            - ASPNETCORE_URLS=http://+:8080            
+            - MessageQueueConnection__MessageBus=host=rabbitmq:5672;username=guest;password=guest;publisherConfirms=true;timeout=30
+            - JwtSettings__Segredo=476a7f12-61d4-4ef9-92c5-7420e69e0c83
+            - JwtSettings__HorasParaExpirar=2
+            - JwtSettings__Emissor=EducaOnline
+            - JwtSettings__Audiencia=https://localhost
+        depends_on:            
+            identidade-api:
+                condition: service_started
+            aluno-api:
+                condition: service_started
+            pedidos-api:
+                condition: service_started
+            financeiro-api:
+                condition: service_started
+            conteudo-api:
+                condition: service_started
+
+        networks:
+            - educaonline-network
+        
+        restart: unless-stopped
+        user: root
+        command: >
+            sh -c "
+            dotnet EducaOnline.Bff.dll"
     identidade-migrate:
          image: mcr.microsoft.com/dotnet/sdk:9.0
          container_name: educaonline_identidade_migrate         
