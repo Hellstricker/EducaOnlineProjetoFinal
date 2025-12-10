@@ -63,21 +63,21 @@ namespace EducaOnLine.Pedidos.API.Application.Queries
             await _pedidoRepository.ObterConexao().QueryAsync<PedidoRaw, PedidoItemRaw, PedidoDTO>(sql,
                 (pRaw, piRaw) =>
                 {
-                    var pId = Guid.Parse(pRaw.PedidoId);
+                    var pId = Guid.Parse(pRaw.PedidoId!);
                     var p = lookup.GetValueOrDefault(pId) ?? new PedidoDTO
                     {
                         Id = pId,
-                        ClienteId = Guid.Parse(pRaw.ClienteId),
+                        ClienteId = Guid.Parse(pRaw.ClienteId!),
                         PedidoItems = new List<PedidoItemDTO>()
                     };
 
                     var pi = new PedidoItemDTO
                     {
                         PedidoId = pId,
-                        ProdutoId = Guid.Parse(piRaw.ProdutoId)
+                        ProdutoId = Guid.Parse(piRaw.ProdutoId!)
                     };
 
-                    p.PedidoItems.Add(pi);
+                    p.PedidoItems?.Add(pi);
                     lookup[pId] = p;
 
                     return p;
