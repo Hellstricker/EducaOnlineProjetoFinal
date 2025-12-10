@@ -1,5 +1,5 @@
 ﻿using Dapper;
-using Educaonline.Pedidos.API.Application.DTO;
+using EducaOnline.Pedidos.API.Application.DTO;
 using EducaOnline.Pedidos.API.Domain;
 using SQLitePCL;
 

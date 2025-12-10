@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Educaonline.Pedidos.API.Migrations
+namespace EducaOnline.Pedidos.API.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Educaonline.Pedidos.API.Migrations
+namespace EducaOnline.Pedidos.API.Migrations
 {
     [DbContext(typeof(PedidosContext))]
     [Migration("20251005190139_Initial")]

@@ -1,4 +1,4 @@
-﻿using Educaonline.Pedidos.API.Services;
+﻿using EducaOnline.Pedidos.API.Services;
 using EducaOnline.Core.Utils;
 using EducaOnline.MessageBus;
 

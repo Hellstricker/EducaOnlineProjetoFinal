@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Educaonline.Pedidos.API.Migrations
+namespace EducaOnline.Pedidos.API.Migrations
 {
     /// <inheritdoc />
     public partial class RemovingCodigo : Migration

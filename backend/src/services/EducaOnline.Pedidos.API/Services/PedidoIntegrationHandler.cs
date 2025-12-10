@@ -3,7 +3,7 @@ using EducaOnline.Core.Messages.Integration;
 using EducaOnline.MessageBus;
 using EducaOnline.Pedidos.API.Domain;
 
-namespace Educaonline.Pedidos.API.Services
+namespace EducaOnline.Pedidos.API.Services
 {
     public class PedidoIntegrationHandler : BackgroundService
     {

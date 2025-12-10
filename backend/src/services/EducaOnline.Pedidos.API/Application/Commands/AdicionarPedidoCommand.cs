@@ -1,4 +1,4 @@
-﻿using Educaonline.Pedidos.API.Application.DTO;
+﻿using EducaOnline.Pedidos.API.Application.DTO;
 using EducaOnline.Core.Messages;
 using FluentValidation;
 

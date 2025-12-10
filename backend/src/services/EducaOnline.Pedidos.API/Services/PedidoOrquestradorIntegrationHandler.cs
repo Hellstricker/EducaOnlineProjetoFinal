@@ -2,7 +2,7 @@
 using EducaOnline.MessageBus;
 using EducaOnLine.Pedidos.API.Application.Queries;
 
-namespace Educaonline.Pedidos.API.Services
+namespace EducaOnline.Pedidos.API.Services
 {
     public class PedidoOrquestradorIntegrationHandler : IHostedService, IDisposable
     {

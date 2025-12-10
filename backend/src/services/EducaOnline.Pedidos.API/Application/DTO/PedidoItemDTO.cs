@@ -1,7 +1,7 @@
 ﻿using System;
 using EducaOnline.Pedidos.API.Domain;
 
-namespace Educaonline.Pedidos.API.Application.DTO
+namespace EducaOnline.Pedidos.API.Application.DTO
 {
     public class PedidoItemDTO
     {

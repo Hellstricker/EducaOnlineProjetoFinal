@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 
 
-namespace Educaonline.Pedidos.API.Application.DTO
+namespace EducaOnline.Pedidos.API.Application.DTO
 {
     public class PedidoDTO
     {

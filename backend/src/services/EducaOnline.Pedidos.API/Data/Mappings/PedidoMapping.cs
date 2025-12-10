@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Reflection.Emit;
 
-namespace Educaonline.Pedidos.API.Data.Mappings
+namespace EducaOnline.Pedidos.API.Data.Mappings
 {
     public class PedidoMapping : IEntityTypeConfiguration<Pedido>
     {
