@@ -1,6 +1,7 @@
 ﻿using EducaOnline.Conteudo.API.Data;
 using EducaOnline.Core.Middlewares;
 using EducaOnline.WebAPI.Core.Identidade;
+using MeuProjeto.WebAPI.Core.Configuration;
 using Microsoft.EntityFrameworkCore;
 
 namespace EducaOnline.Conteudo.API.Configuration
@@ -37,11 +38,12 @@ namespace EducaOnline.Conteudo.API.Configuration
 
             services.AddAutoMapper(typeof(Program));
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Program>());
+            services.AddHealthCheckConfig(configuration);
         }
 
         public static void UseApiConfig(this WebApplication app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            if (env.IsDevelopment() || env.IsEnvironment("Docker"))
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwaggerConfig();
@@ -56,7 +58,9 @@ namespace EducaOnline.Conteudo.API.Configuration
 
             app.UseAuthConfiguration();
 
-            app.MapControllers();
+            app.UseHealthCheckConfig();
+
+            app.MapControllers();            
         }
     }
 }

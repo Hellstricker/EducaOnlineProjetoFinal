@@ -35,7 +35,7 @@ namespace EducaOnline.WebAPI.Core.Usuario
             }
 
             var claim = principal.FindFirst("JWT");
-            return claim?.Value;
+            return claim!.Value;
         }
     }
 }

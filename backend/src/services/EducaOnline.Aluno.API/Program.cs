@@ -1,6 +1,4 @@
-
 using EducaOnline.Aluno.API.Configuration;
-using EducaOnline.Catalogo.API.Configurations;
 using EducaOnline.WebAPI.Core.Identidade;
 
 var builder = WebApplication.CreateBuilder(args);

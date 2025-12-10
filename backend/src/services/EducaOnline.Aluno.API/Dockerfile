@@ -10,21 +10,28 @@ EXPOSE 8081
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-ARG BUILD_CONFIGURATION=Release
+ARG BUILD_CONFIGURATION=Docker
 WORKDIR /src
-COPY ["src/services/EducaOnline.Aluno.API/EducaOnline.Aluno.API.csproj", "src/services/EducaOnline.Aluno.API/"]
+COPY ["./backend/src/services/EducaOnline.Aluno.API/EducaOnline.Aluno.API.csproj", "src/services/EducaOnline.Aluno.API/"]
+COPY ["./backend/src/building_blocks/EducaOnline.Core/EducaOnline.Core.csproj", "backend/src/building_blocks/EducaOnline.Core/"]
+COPY ["./backend/src/building_blocks/EducaOnline.WebAPI.Core/EducaOnline.WebAPI.Core.csproj", "backend/src/building_blocks/EducaOnline.WebAPI.Core/"]
+COPY ["./backend/src/building_blocks/EducaOnline.MessageBus/EducaOnline.MessageBus.csproj", "backend/src/building_blocks/EducaOnline.MessageBus/"]
 RUN dotnet restore "./src/services/EducaOnline.Aluno.API/EducaOnline.Aluno.API.csproj"
 COPY . .
-WORKDIR "/src/src/services/EducaOnline.Aluno.API"
+WORKDIR "./backend/src/services/EducaOnline.Aluno.API"
 RUN dotnet build "./EducaOnline.Aluno.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
+ARG BUILD_CONFIGURATION=Docker
 RUN dotnet publish "./EducaOnline.Aluno.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
+RUN mkdir -p /app/data && \
+    chmod 777 /app/data
 COPY --from=publish /app/publish .
+RUN chown -R $APP_UID:$APP_UID /app/data || true
+ENV DOTNET_ENVIRONMENT=Docker
 ENTRYPOINT ["dotnet", "EducaOnline.Aluno.API.dll"]

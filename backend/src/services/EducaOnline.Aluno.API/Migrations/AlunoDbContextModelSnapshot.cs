@@ -70,9 +70,6 @@ namespace EducaOnline.Aluno.API.Migrations
                     b.Property<Guid>("AlunoId")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("AlunoId1")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Curso")
                         .HasColumnType("TEXT");
 
@@ -85,8 +82,6 @@ namespace EducaOnline.Aluno.API.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AlunoId");
-
-                    b.HasIndex("AlunoId1");
 
                     b.ToTable("Certificados", (string)null);
                 });
@@ -170,15 +165,11 @@ namespace EducaOnline.Aluno.API.Migrations
 
             modelBuilder.Entity("EducaOnline.Aluno.API.Models.Certificado", b =>
                 {
-                    b.HasOne("EducaOnline.Aluno.API.Models.Aluno", null)
+                    b.HasOne("EducaOnline.Aluno.API.Models.Aluno", "Aluno")
                         .WithMany("Certificados")
                         .HasForeignKey("AlunoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("EducaOnline.Aluno.API.Models.Aluno", "Aluno")
-                        .WithMany()
-                        .HasForeignKey("AlunoId1");
 
                     b.Navigation("Aluno");
                 });

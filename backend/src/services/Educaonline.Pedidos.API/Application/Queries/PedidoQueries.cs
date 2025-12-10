@@ -114,14 +114,14 @@ namespace EducaOnLine.Pedidos.API.Application.Queries
 
     public class PedidoRaw
     {
-        public string PedidoId { get; set; }
-        public string ClienteId { get; set; }
+        public string? PedidoId { get; set; }
+        public string? ClienteId { get; set; }
     }
 
     public class PedidoItemRaw
     {
-        public string PedidoItemId { get; set; }
-        public string ProdutoId { get; set; }
+        public string? PedidoItemId { get; set; }
+        public string? ProdutoId { get; set; }
     }
 
 

@@ -45,7 +45,7 @@ namespace EducaOnline.Aluno.API.Controllers
             }
 
             var novoId = Guid.NewGuid();
-            var cmd = new AdicionarAlunoCommand(novoId, alunoDto.Nome, alunoDto.Email);
+            var cmd = new AdicionarAlunoCommand(novoId, alunoDto.Nome!, alunoDto.Email!);
 
             var result = await _mediator.EnviarComando(cmd);
             if (!result.IsValid)

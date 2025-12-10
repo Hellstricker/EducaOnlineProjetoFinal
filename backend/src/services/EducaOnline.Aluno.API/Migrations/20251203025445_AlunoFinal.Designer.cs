@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EducaOnline.Aluno.API.Migrations
 {
     [DbContext(typeof(AlunoDbContext))]
-    [Migration("20250820161742_First")]
-    partial class First
+    [Migration("20251203025445_AlunoFinal")]
+    partial class AlunoFinal
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,7 +42,7 @@ namespace EducaOnline.Aluno.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Aluno", (string)null);
+                    b.ToTable("Alunos", (string)null);
                 });
 
             modelBuilder.Entity("EducaOnline.Aluno.API.Models.AulaConcluida", b =>
@@ -61,7 +61,7 @@ namespace EducaOnline.Aluno.API.Migrations
 
                     b.HasIndex("AlunoId");
 
-                    b.ToTable("AulaConcluida", (string)null);
+                    b.ToTable("AulaConcluidas", (string)null);
                 });
 
             modelBuilder.Entity("EducaOnline.Aluno.API.Models.Certificado", b =>
@@ -74,22 +74,19 @@ namespace EducaOnline.Aluno.API.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Curso")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("DataEmissao")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Numero")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AlunoId")
-                        .IsUnique();
+                    b.HasIndex("AlunoId");
 
-                    b.ToTable("Certificado", (string)null);
+                    b.ToTable("Certificados", (string)null);
                 });
 
             modelBuilder.Entity("EducaOnline.Aluno.API.Models.Matricula", b =>
@@ -125,10 +122,9 @@ namespace EducaOnline.Aluno.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AlunoId")
-                        .IsUnique();
+                    b.HasIndex("AlunoId");
 
-                    b.ToTable("Matricula", (string)null);
+                    b.ToTable("Matriculas", (string)null);
                 });
 
             modelBuilder.Entity("EducaOnline.Aluno.API.Models.Aluno", b =>
@@ -138,18 +134,18 @@ namespace EducaOnline.Aluno.API.Migrations
                             b1.Property<Guid>("AlunoId")
                                 .HasColumnType("TEXT");
 
-                            b1.Property<double>("Progresso")
+                            b1.Property<double?>("Progresso")
                                 .HasColumnType("REAL");
 
-                            b1.Property<int>("TotalAulas")
+                            b1.Property<int?>("TotalAulas")
                                 .HasColumnType("INTEGER");
 
-                            b1.Property<int>("TotalAulasConcluidas")
+                            b1.Property<int?>("TotalAulasConcluidas")
                                 .HasColumnType("INTEGER");
 
                             b1.HasKey("AlunoId");
 
-                            b1.ToTable("Aluno");
+                            b1.ToTable("Alunos");
 
                             b1.WithOwner()
                                 .HasForeignKey("AlunoId");
@@ -173,8 +169,8 @@ namespace EducaOnline.Aluno.API.Migrations
             modelBuilder.Entity("EducaOnline.Aluno.API.Models.Certificado", b =>
                 {
                     b.HasOne("EducaOnline.Aluno.API.Models.Aluno", "Aluno")
-                        .WithOne("Certificado")
-                        .HasForeignKey("EducaOnline.Aluno.API.Models.Certificado", "AlunoId")
+                        .WithMany("Certificados")
+                        .HasForeignKey("AlunoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -184,9 +180,9 @@ namespace EducaOnline.Aluno.API.Migrations
             modelBuilder.Entity("EducaOnline.Aluno.API.Models.Matricula", b =>
                 {
                     b.HasOne("EducaOnline.Aluno.API.Models.Aluno", "Aluno")
-                        .WithOne("Matricula")
-                        .HasForeignKey("EducaOnline.Aluno.API.Models.Matricula", "AlunoId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .WithMany("Matriculas")
+                        .HasForeignKey("AlunoId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Aluno");
@@ -196,11 +192,9 @@ namespace EducaOnline.Aluno.API.Migrations
                 {
                     b.Navigation("AulasConcluidas");
 
-                    b.Navigation("Certificado")
-                        .IsRequired();
+                    b.Navigation("Certificados");
 
-                    b.Navigation("Matricula")
-                        .IsRequired();
+                    b.Navigation("Matriculas");
                 });
 #pragma warning restore 612, 618
         }

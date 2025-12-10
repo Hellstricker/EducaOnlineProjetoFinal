@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EducaOnline.Identidade.API.Migrations
 {
     /// <inheritdoc />
-    public partial class Inicial_Atualizada : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

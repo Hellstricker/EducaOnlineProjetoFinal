@@ -2,7 +2,7 @@
 using EducaOnline.Core.Utils;
 using EducaOnline.Aluno.API.Services;
 
-namespace EducaOnline.Catalogo.API.Configurations
+namespace EducaOnline.Aluno.API.Configuration
 {
     public static class MessageBusConfig
     {

@@ -1,4 +1,5 @@
 ﻿using EducaOnline.WebAPI.Core.Identidade;
+using MeuProjeto.WebAPI.Core.Configuration;
 
 namespace EducaOnline.Identidade.API.Configurations
 {
@@ -21,12 +22,15 @@ namespace EducaOnline.Identidade.API.Configurations
 
 
             services.AddControllers();
+
+            services.AddHealthCheckConfig(services.BuildServiceProvider().GetRequiredService<IConfiguration>());
+
             return services;
         }
 
         public static WebApplication UseApiConfiguration(this WebApplication app)
         {
-            if (app.Environment.IsDevelopment())
+            if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Docker"))
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -37,7 +41,9 @@ namespace EducaOnline.Identidade.API.Configurations
 
             app.UseAuthConfiguration();
 
-            app.MapControllers();
+            app.UseHealthCheckConfig();
+
+            app.MapControllers();            
 
             return app;
         }

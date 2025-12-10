@@ -2,8 +2,7 @@
 using EducaOnline.Identidade.API.Data;
 using EducaOnline.WebAPI.Core.Configuration;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+using Microsoft.EntityFrameworkCore;
 
 namespace EducaOnline.Identidade.API.Configurations
 {
@@ -11,7 +10,7 @@ namespace EducaOnline.Identidade.API.Configurations
     {
         public static async Task EnsureSeedData(WebApplication app)
         {
-            var services = app.Services.CreateScope().ServiceProvider;
+            var services = app.Services.CreateScope().ServiceProvider;            
             await EnsureSeedData(services);
         }
 
@@ -94,6 +93,14 @@ namespace EducaOnline.Identidade.API.Configurations
                     await roleManager.CreateAsync(new IdentityRole(namesRole));
                 }
             }
+        }
+
+        public static async Task MigrateDatabaseAsync(IServiceProvider serviceProvider)
+        {
+            using var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
+            var env = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
+            var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            await db.Database.MigrateAsync();
         }
     }
 }

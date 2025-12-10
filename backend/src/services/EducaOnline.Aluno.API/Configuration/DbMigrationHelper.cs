@@ -1,7 +1,5 @@
 ﻿using EducaOnline.Aluno.API.Data;
 using EducaOnline.Aluno.API.Models;
-using EducaOnline.Aluno.API.Models.Enum;
-using EducaOnline.Core.Utils;
 using EducaOnline.WebAPI.Core.Configuration;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +10,7 @@ namespace EducaOnline.Aluno.API.Configuration
         public static async Task EnsureSeedData(WebApplication app)
         {
             var services = app.Services.CreateScope().ServiceProvider;
+            await MigrateDatabaseAsync(services);
             await EnsureSeedData(services);
         }
 
@@ -97,6 +96,14 @@ namespace EducaOnline.Aluno.API.Configuration
                     await alunoContext.SaveChangesAsync();
                 }
             }
+        }
+
+        public static async Task MigrateDatabaseAsync(IServiceProvider serviceProvider)
+        {
+            using var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
+            var env = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
+            var db = scope.ServiceProvider.GetRequiredService<AlunoDbContext>();
+            await db.Database.MigrateAsync();
         }
     }
 }

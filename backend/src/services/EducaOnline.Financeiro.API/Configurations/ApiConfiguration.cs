@@ -2,6 +2,7 @@
 using EducaOnline.Financeiro.API.Data;
 using EducaOnline.WebAPI.Core.Identidade;
 using EducaOnline.Financeiro.API.Facade;
+using MeuProjeto.WebAPI.Core.Configuration;
 
 namespace EducaOnline.Financeiro.API.Configurations
 {
@@ -27,13 +28,15 @@ namespace EducaOnline.Financeiro.API.Configurations
                             .AllowAnyHeader());
             });
 
+            services.AddHealthCheckConfig(configuration);
+
             return services;
         }
 
         public static WebApplication UseApiConfiguration(this WebApplication app)
         {
 
-            if (app.Environment.IsDevelopment())
+            if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Docker"))
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -44,7 +47,9 @@ namespace EducaOnline.Financeiro.API.Configurations
 
             app.UseAuthConfiguration();
 
-            app.MapControllers();
+            app.UseHealthCheckConfig();
+
+            app.MapControllers();           
 
             return app;
         }

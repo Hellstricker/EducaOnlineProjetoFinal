@@ -1,5 +1,6 @@
 ﻿using EducaOnline.WebAPI.Core.Identidade;
 using EducaOnLine.Pedidos.API.Data;
+using MeuProjeto.WebAPI.Core.Configuration;
 using Microsoft.EntityFrameworkCore;
 
 namespace EducaOnline.Pedidos.API.Configurations
@@ -25,13 +26,15 @@ namespace EducaOnline.Pedidos.API.Configurations
                             .AllowAnyHeader());
             });
 
+            services.AddHealthCheckConfig(configuration);
+
             return services;
         }
 
         public static WebApplication UseApiConfiguration(this WebApplication app)
         {
 
-            if (app.Environment.IsDevelopment())
+            if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Docker"))
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -44,7 +47,9 @@ namespace EducaOnline.Pedidos.API.Configurations
 
             app.UseAuthConfiguration();
 
-            app.MapControllers();
+            app.UseHealthCheckConfig();
+
+            app.MapControllers();            
 
             return app;
         }

@@ -19,8 +19,8 @@ namespace EducaOnline.Aluno.API.Data.Mappings
                    .HasForeignKey(m => m.AlunoId);
 
             builder.HasMany(a => a.Certificados)
-                   .WithOne()
-                   .HasForeignKey("AlunoId");
+                   .WithOne(c => c.Aluno)
+                   .HasForeignKey(c => c.AlunoId);
 
             builder.HasMany(a => a.AulasConcluidas)
                    .WithOne(a => a.Aluno)
