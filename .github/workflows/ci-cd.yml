@@ -82,5 +82,5 @@ jobs:
                context: ${{ matrix.context }}
                file: ${{ matrix.dockerfile }}
                push: true
-               tags: ${{ secrets.DOCKERHUB_USERNAME }}/meu-projeto-${{ matrix.service }}:latest
+               tags: ${{ secrets.DOCKERHUB_USERNAME }}/educaonline-${{ matrix.service }}:latest
  
