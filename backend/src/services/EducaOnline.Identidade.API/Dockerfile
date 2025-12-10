@@ -12,13 +12,10 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Docker
 WORKDIR /src
-COPY ["./backend/src/services/EducaOnline.Identidade.API/EducaOnline.Identidade.API.csproj", "src/services/EducaOnline.Identidade.API/"]
-COPY ["./backend/src/building_blocks/EducaOnline.Core/EducaOnline.Core.csproj", "backend/src/building_blocks/EducaOnline.Core/"]
-COPY ["./backend/src/building_blocks/EducaOnline.WebAPI.Core/EducaOnline.WebAPI.Core.csproj", "backend/src/building_blocks/EducaOnline.WebAPI.Core/"]
-COPY ["./backend/src/building_blocks/EducaOnline.MessageBus/EducaOnline.MessageBus.csproj", "backend/src/building_blocks/EducaOnline.MessageBus/"]
+COPY ["/src/services/EducaOnline.Identidade.API/EducaOnline.Identidade.API.csproj", "src/services/EducaOnline.Identidade.API/"]
 RUN dotnet restore "./src/services/EducaOnline.Identidade.API/EducaOnline.Identidade.API.csproj"
 COPY . .
-WORKDIR "./backend/src/services/EducaOnline.Identidade.API"
+WORKDIR "/src/src/services/EducaOnline.Identidade.API"
 RUN dotnet build "./EducaOnline.Identidade.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
