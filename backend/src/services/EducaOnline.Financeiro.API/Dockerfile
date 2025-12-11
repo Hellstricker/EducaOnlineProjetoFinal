@@ -12,7 +12,7 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Docker
 WORKDIR /src
-COPY ["/src/services/EducaOnline.Financeiro.API/EducaOnline.Financeiro.API.csproj", "src/services/EducaOnline.Financeiro.API/"]
+COPY ["/backend/src/services/EducaOnline.Financeiro.API/EducaOnline.Financeiro.API.csproj", "src/services/EducaOnline.Financeiro.API/"]
 RUN dotnet restore "./src/services/EducaOnline.Financeiro.API/EducaOnline.Financeiro.API.csproj"
 COPY . .
 WORKDIR "/src/src/services/EducaOnline.Financeiro.API"

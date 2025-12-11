@@ -10,21 +10,23 @@ EXPOSE 8081
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-ARG BUILD_CONFIGURATION=Release
+ARG BUILD_CONFIGURATION=Docker
 WORKDIR /src
-COPY ["/src/api_gateways/EducaOnline.Bff/EducaOnline.Bff.csproj", "src/api_gateways/EducaOnline.Bff/"]
-RUN dotnet restore "./src/api_gateways/EducaOnline.Bff/EducaOnline.Bff.csproj"
-COPY . .
-WORKDIR "/src/src/api_gateways/EducaOnline.Bff"
+COPY ["backend/src/api_gateways/EducaOnline.Bff/EducaOnline.Bff.csproj", "backend/src/api_gateways/EducaOnline.Bff/"]
+COPY ["backend/src/building_blocks/EducaOnline.Core/EducaOnline.Core.csproj", "backend/src/building_blocks/EducaOnline.Core/"]
+RUN dotnet restore "backend/src/api_gateways/EducaOnline.Bff/EducaOnline.Bff.csproj"
+COPY backend/ backend/
+WORKDIR "/src/backend/src/api_gateways/EducaOnline.Bff"
 RUN dotnet build "./EducaOnline.Bff.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
+ARG BUILD_CONFIGURATION=Docker
 RUN dotnet publish "./EducaOnline.Bff.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+ENV DOTNET_ENVIRONMENT=Docker
 ENTRYPOINT ["dotnet", "EducaOnline.Bff.dll"]
