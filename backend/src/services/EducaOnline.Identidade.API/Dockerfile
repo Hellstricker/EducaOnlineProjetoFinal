@@ -2,7 +2,6 @@
 
 # This stage is used when running from VS in fast mode (Default for Debug configuration)
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
-USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
@@ -29,9 +28,7 @@ RUN dotnet publish "./EducaOnline.Identidade.API.csproj" -c $BUILD_CONFIGURATION
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
-RUN mkdir -p /app/data && \
-    chmod 777 /app/data
+RUN mkdir -p /app/data && chmod 777 /app/data
 COPY --from=publish /app/publish .
-RUN chown -R $APP_UID:$APP_UID /app/data || true
 ENV DOTNET_ENVIRONMENT=Docker
 ENTRYPOINT ["dotnet", "EducaOnline.Identidade.API.dll"]

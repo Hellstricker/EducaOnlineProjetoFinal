@@ -3,8 +3,8 @@ services:
         image: rabbitmq:3-management
         container_name: educaonline-rabbitmq
         ports: 
-           - "5672:5672"       # RabbitMQ default port
-           - "15672:15672"     # RabbitMQ management UI port
+           - "5672:5672"
+           - "15672:15672"
         environment: 
           RABBITMQ_DEFAULT_USER: guest
           RABBITMQ_DEFAULT_PASS: guest
@@ -16,204 +16,10 @@ services:
             start_period: 30s
         networks:
           - educaonline-network
-        restart: unless-stopped
-    
-    identidade-api:
-        build:
-            context: .
-            dockerfile: ./backend/src/services/EducaOnline.Identidade.API/Dockerfile
-        container_name: educaonline-identidade-api
-        ports:
-            - "5152:8080"
-        environment:
-            - ASPNETCORE_ENVIRONMENT=Docker
-            - ASPNETCORE_URLS=http://+:8080
-            - ConnectionStrings__DefaultConnection=Data Source=/app/data/UserDatabase.db
-            - MessageQueueConnection__MessageBus=host=rabbitmq:5672;username=guest;password=guest;publisherConfirms=true;timeout=30
-            - JwtSettings__Segredo=476a7f12-61d4-4ef9-92c5-7420e69e0c83
-            - JwtSettings__HorasParaExpirar=2
-            - JwtSettings__Emissor=EducaOnline
-            - JwtSettings__Audiencia=https://localhost
-        depends_on:
-            rabbitmq:
-                condition: service_healthy
-            identidade-migrate:
-                condition: service_completed_successfully
-        networks:
-            - educaonline-network
         volumes:
-            - sqlite_identidade:/app/data
+          - rabbitmq_data:/var/lib/rabbitmq
         restart: unless-stopped
-        user: root
-        command: >
-          sh -c "
-          chmod 777 /app/data &&
-          chown -R $$(id -u):$$(id -g) /app/data 2>/dev/null || true &&
-          dotnet EducaOnline.Identidade.API.dll"
 
-    aluno-api:
-        build:
-            context: .
-            dockerfile: ./backend/src/services/EducaOnline.Aluno.API/Dockerfile
-        container_name: educaonline-aluno-api
-        ports:
-            - "5244:8080"
-        environment:
-            - ASPNETCORE_ENVIRONMENT=Docker
-            - ASPNETCORE_URLS=http://+:8080
-            - ConnectionStrings__DefaultConnection=Data Source=/app/data/AlunoDatabase.db
-            - MessageQueueConnection__MessageBus=host=rabbitmq:5672;username=guest;password=guest;publisherConfirms=true;timeout=30
-            - JwtSettings__Segredo=476a7f12-61d4-4ef9-92c5-7420e69e0c83
-            - JwtSettings__HorasParaExpirar=2
-            - JwtSettings__Emissor=EducaOnline
-            - JwtSettings__Audiencia=https://localhost        
-        networks:
-            - educaonline-network
-        volumes:
-            - sqlite_aluno:/app/data
-        restart: unless-stopped
-        user: root
-        command: >
-          sh -c "
-          chmod 777 /app/data &&
-          chown -R $$(id -u):$$(id -g) /app/data 2>/dev/null || true &&
-          dotnet EducaOnline.Aluno.API.dll"
-        depends_on:
-          rabbitmq:
-            condition: service_healthy
-          aluno-migrate:
-                condition: service_completed_successfully
-          identidade-api:
-                condition: service_started
-    pedidos-api:
-        build:
-            context: .
-            dockerfile: ./backend/src/services/EducaOnline.Pedidos.API/Dockerfile
-        container_name: educaonline-pedidos-api
-        ports:
-            - "5270:8080"
-        environment:
-            - ASPNETCORE_ENVIRONMENT=Docker
-            - ASPNETCORE_URLS=http://+:8080
-            - ConnectionStrings__DefaultConnection=Data Source=/app/data/PedidosDatabase.db
-            - MessageQueueConnection__MessageBus=host=rabbitmq:5672;username=guest;password=guest;publisherConfirms=true;timeout=30
-            - JwtSettings__Segredo=476a7f12-61d4-4ef9-92c5-7420e69e0c83
-            - JwtSettings__HorasParaExpirar=2
-            - JwtSettings__Emissor=EducaOnline
-            - JwtSettings__Audiencia=https://localhost
-        depends_on:
-            rabbitmq:
-                condition: service_healthy
-            pedidos-migrate:
-                condition: service_completed_successfully
-        networks:
-            - educaonline-network
-        volumes:
-            - sqlite_pedidos:/app/data
-        restart: unless-stopped
-        user: root
-        command: >
-            sh -c "
-            chmod 777 /app/data &&
-            chown -R $$(id -u):$$(id -g) /app/data 2>/dev/null || true &&
-            dotnet EducaOnline.Pedidos.API.dll"
-    financeiro-api:
-        build:
-            context: .
-            dockerfile: ./backend/src/services/EducaOnline.Financeiro.API/Dockerfile
-        container_name: educaonline-financeiro-api
-        ports:
-            - "5254:8080"
-        environment:
-            - ASPNETCORE_ENVIRONMENT=Docker
-            - ASPNETCORE_URLS=http://+:8080
-            - ConnectionStrings__DefaultConnection=Data Source=/app/data/FinanceiroDatabase.db
-            - MessageQueueConnection__MessageBus=host=rabbitmq:5672;username=guest;password=guest;publisherConfirms=true;timeout=30
-            - JwtSettings__Segredo=476a7f12-61d4-4ef9-92c5-7420e69e0c83
-            - JwtSettings__HorasParaExpirar=2
-            - JwtSettings__Emissor=EducaOnline
-            - JwtSettings__Audiencia=https://localhost
-        depends_on:
-            rabbitmq:
-                condition: service_healthy
-            financeiro-migrate:
-                condition: service_completed_successfully
-        networks:
-            - educaonline-network
-        volumes:
-            - sqlite_financeiro:/app/data
-        restart: unless-stopped
-        user: root
-        command: >
-            sh -c "
-            chmod 777 /app/data &&
-            chown -R $$(id -u):$$(id -g) /app/data 2>/dev/null || true &&
-            dotnet EducaOnline.Financeiro.API.dll"
-    conteudo-api:
-        build:
-            context: .
-            dockerfile: ./backend/src/services/EducaOnline.Conteudo.API/Dockerfile
-        container_name: educaonline-conteudo-api
-        ports:
-            - "5105:8080"
-        environment:
-            - ASPNETCORE_ENVIRONMENT=Docker
-            - ASPNETCORE_URLS=http://+:8080
-            - ConnectionStrings__DefaultConnection=Data Source=/app/data/ConteudoDatabase.db
-            - MessageQueueConnection__MessageBus=host=rabbitmq:5672;username=guest;password=guest;publisherConfirms=true;timeout=30
-            - JwtSettings__Segredo=476a7f12-61d4-4ef9-92c5-7420e69e0c83
-            - JwtSettings__HorasParaExpirar=2
-            - JwtSettings__Emissor=EducaOnline
-            - JwtSettings__Audiencia=https://localhost
-        depends_on:            
-            conteudo-migrate:
-                condition: service_completed_successfully
-        networks:
-            - educaonline-network
-        volumes:
-            - sqlite_conteudo:/app/data
-        restart: unless-stopped
-        user: root
-        command: >
-            sh -c "
-            chmod 777 /app/data &&
-            chown -R $$(id -u):$$(id -g) /app/data 2>/dev/null || true &&
-            dotnet EducaOnline.Conteudo.API.dll"
-    bff:
-        build:
-            context: .
-            dockerfile: ./backend/src/api_gateways/EducaOnline.Bff/Dockerfile
-        container_name: educaonline-bff
-        ports:
-            - "5051:8080"
-        environment:
-            - ASPNETCORE_ENVIRONMENT=Docker
-            - ASPNETCORE_URLS=http://+:8080            
-            - MessageQueueConnection__MessageBus=host=rabbitmq:5672;username=guest;password=guest;publisherConfirms=true;timeout=30
-            - JwtSettings__Segredo=476a7f12-61d4-4ef9-92c5-7420e69e0c83
-            - JwtSettings__HorasParaExpirar=2
-            - JwtSettings__Emissor=EducaOnline
-            - JwtSettings__Audiencia=https://localhost
-        depends_on:            
-            identidade-api:
-                condition: service_started
-            aluno-api:
-                condition: service_started
-            pedidos-api:
-                condition: service_started
-            financeiro-api:
-                condition: service_started
-            conteudo-api:
-                condition: service_started
-
-        networks:
-            - educaonline-network
-        
-        restart: unless-stopped
-        user: root
-        command: >
-            sh -c "
-            dotnet EducaOnline.Bff.dll"
     identidade-migrate:
          image: mcr.microsoft.com/dotnet/sdk:9.0
          container_name: educaonline_identidade_migrate         
@@ -257,52 +63,7 @@ services:
          depends_on:
             identidade-migrate:
                 condition: service_completed_successfully
-    pedidos-migrate:
-         image: mcr.microsoft.com/dotnet/sdk:9.0
-         container_name: educaonline_pedido_migrate         
-         working_dir: /src/backend/src/services/EducaOnline.Pedidos.API
-         environment:
-            - ConnectionStrings__DefaultConnection=Data Source=/app/data/PedidosDatabase.db
-            - PATH=/root/.dotnet/tools:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-         volumes:
-            - ./backend:/src/backend
-            - sqlite_pedidos:/app/data
-         command: >
-            sh -c " 
-                    mkdir -p /app/data &&
-                    chmod 777 /app/data &&
-                    dotnet restore EducaOnline.Pedidos.API.csproj &&
-                    dotnet build EducaOnline.Pedidos.API.csproj &&
-                    dotnet tool install --global dotnet-ef --version 9.* &&                    
-                    dotnet-ef database update --project EducaOnline.Pedidos.API.csproj --connection 'Data Source=/app/data/PedidosDatabase.db'"
-         networks:
-            - educaonline-network
-         depends_on:
-            conteudo-migrate:
-                condition: service_completed_successfully
-    financeiro-migrate:
-         image: mcr.microsoft.com/dotnet/sdk:9.0
-         container_name: educaonline_financeiro_migrate         
-         working_dir: /src/backend/src/services/EducaOnline.Financeiro.API
-         environment:
-            - ConnectionStrings__DefaultConnection=Data Source=/app/data/FinanceiroDatabase.db
-            - PATH=/root/.dotnet/tools:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-         volumes:
-            - ./backend:/src/backend
-            - sqlite_financeiro:/app/data
-         command: >
-            sh -c " 
-                    mkdir -p /app/data &&
-                    chmod 777 /app/data &&
-                    dotnet restore EducaOnline.Financeiro.API.csproj &&
-                    dotnet build EducaOnline.Financeiro.API.csproj &&
-                    dotnet tool install --global dotnet-ef --version 9.* &&                    
-                    dotnet-ef database update --project EducaOnline.Financeiro.API.csproj --connection 'Data Source=/app/data/FinanceiroDatabase.db'"
-         networks:
-            - educaonline-network
-         depends_on:
-            pedidos-migrate:
-                condition: service_completed_successfully 
+
     conteudo-migrate:
          image: mcr.microsoft.com/dotnet/sdk:9.0
          container_name: educaonline_conteudo_migrate         
@@ -326,6 +87,219 @@ services:
          depends_on:
             aluno-migrate:
                 condition: service_completed_successfully
+    
+    pedidos-migrate:
+         image: mcr.microsoft.com/dotnet/sdk:9.0
+         container_name: educaonline_pedido_migrate         
+         working_dir: /src/backend/src/services/EducaOnline.Pedidos.API
+         environment:
+            - ConnectionStrings__DefaultConnection=Data Source=/app/data/PedidosDatabase.db
+            - PATH=/root/.dotnet/tools:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+         volumes:
+            - ./backend:/src/backend
+            - sqlite_pedidos:/app/data
+         command: >
+            sh -c " 
+                    mkdir -p /app/data &&
+                    chmod 777 /app/data &&
+                    dotnet restore EducaOnline.Pedidos.API.csproj &&
+                    dotnet build EducaOnline.Pedidos.API.csproj &&
+                    dotnet tool install --global dotnet-ef --version 9.* &&                    
+                    dotnet-ef database update --project EducaOnline.Pedidos.API.csproj --connection 'Data Source=/app/data/PedidosDatabase.db'"
+         networks:
+            - educaonline-network
+         depends_on:
+            conteudo-migrate:
+                condition: service_completed_successfully
+
+    financeiro-migrate:
+         image: mcr.microsoft.com/dotnet/sdk:9.0
+         container_name: educaonline_financeiro_migrate         
+         working_dir: /src/backend/src/services/EducaOnline.Financeiro.API
+         environment:
+            - ConnectionStrings__DefaultConnection=Data Source=/app/data/FinanceiroDatabase.db
+            - PATH=/root/.dotnet/tools:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+         volumes:
+            - ./backend:/src/backend
+            - sqlite_financeiro:/app/data
+         command: >
+            sh -c " 
+                    mkdir -p /app/data &&
+                    chmod 777 /app/data &&
+                    dotnet restore EducaOnline.Financeiro.API.csproj &&
+                    dotnet build EducaOnline.Financeiro.API.csproj &&
+                    dotnet tool install --global dotnet-ef --version 9.* &&                    
+                    dotnet-ef database update --project EducaOnline.Financeiro.API.csproj --connection 'Data Source=/app/data/FinanceiroDatabase.db'"
+         networks:
+            - educaonline-network
+         depends_on:
+            pedidos-migrate:
+                condition: service_completed_successfully 
+
+    identidade-api:
+        build:
+            context: .
+            dockerfile: backend/src/services/EducaOnline.Identidade.API/Dockerfile
+        container_name: educaonline-identidade-api
+        ports:
+            - "5152:8080"
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Docker
+            - ASPNETCORE_URLS=http://+:8080
+            - ConnectionStrings__DefaultConnection=Data Source=/app/data/UserDatabase.db
+            - MessageQueueConnection__MessageBus=host=rabbitmq:5672;username=guest;password=guest;publisherConfirms=true;timeout=30
+            - JwtSettings__Segredo=476a7f12-61d4-4ef9-92c5-7420e69e0c83
+            - JwtSettings__HorasParaExpirar=2
+            - JwtSettings__Emissor=EducaOnline
+            - JwtSettings__Audiencia=https://localhost
+        depends_on:
+            rabbitmq:
+                condition: service_healthy
+            identidade-migrate:
+                condition: service_completed_successfully
+        networks:
+            - educaonline-network
+        volumes:
+            - sqlite_identidade:/app/data
+        restart: unless-stopped                
+
+    aluno-api:
+        build:
+            context: .
+            dockerfile: backend/src/services/EducaOnline.Aluno.API/Dockerfile
+        container_name: educaonline-aluno-api
+        ports:
+            - "5244:8080"
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Docker
+            - ASPNETCORE_URLS=http://+:8080
+            - ConnectionStrings__DefaultConnection=Data Source=/app/data/AlunoDatabase.db
+            - MessageQueueConnection__MessageBus=host=rabbitmq:5672;username=guest;password=guest;publisherConfirms=true;timeout=30
+            - JwtSettings__Segredo=476a7f12-61d4-4ef9-92c5-7420e69e0c83
+            - JwtSettings__HorasParaExpirar=2
+            - JwtSettings__Emissor=EducaOnline
+            - JwtSettings__Audiencia=https://localhost                           
+        depends_on:
+          rabbitmq:
+            condition: service_healthy
+          aluno-migrate:
+                condition: service_completed_successfully
+          identidade-api:
+                condition: service_started
+        networks:
+            - educaonline-network
+        volumes:
+            - sqlite_aluno:/app/data
+        restart: unless-stopped     
+
+    pedidos-api:
+        build:
+            context: .
+            dockerfile: backend/src/services/EducaOnline.Pedidos.API/Dockerfile
+        container_name: educaonline-pedidos-api
+        ports:
+            - "5270:8080"
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Docker
+            - ASPNETCORE_URLS=http://+:8080
+            - ConnectionStrings__DefaultConnection=Data Source=/app/data/PedidosDatabase.db
+            - MessageQueueConnection__MessageBus=host=rabbitmq:5672;username=guest;password=guest;publisherConfirms=true;timeout=30
+            - JwtSettings__Segredo=476a7f12-61d4-4ef9-92c5-7420e69e0c83
+            - JwtSettings__HorasParaExpirar=2
+            - JwtSettings__Emissor=EducaOnline
+            - JwtSettings__Audiencia=https://localhost
+        depends_on:
+            rabbitmq:
+                condition: service_healthy
+            pedidos-migrate:
+                condition: service_completed_successfully
+        networks:
+            - educaonline-network
+        volumes:
+            - sqlite_pedidos:/app/data
+        restart: unless-stopped
+        
+    financeiro-api:
+        build:
+            context: .
+            dockerfile: backend/src/services/EducaOnline.Financeiro.API/Dockerfile
+        container_name: educaonline-financeiro-api
+        ports:
+            - "5254:8080"
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Docker
+            - ASPNETCORE_URLS=http://+:8080
+            - ConnectionStrings__DefaultConnection=Data Source=/app/data/FinanceiroDatabase.db
+            - MessageQueueConnection__MessageBus=host=rabbitmq:5672;username=guest;password=guest;publisherConfirms=true;timeout=30
+            - JwtSettings__Segredo=476a7f12-61d4-4ef9-92c5-7420e69e0c83
+            - JwtSettings__HorasParaExpirar=2
+            - JwtSettings__Emissor=EducaOnline
+            - JwtSettings__Audiencia=https://localhost
+        depends_on:
+            rabbitmq:
+                condition: service_healthy
+            financeiro-migrate:
+                condition: service_completed_successfully
+        networks:
+            - educaonline-network
+        volumes:
+            - sqlite_financeiro:/app/data
+        restart: unless-stopped
+        
+    conteudo-api:
+        build:
+            context: .
+            dockerfile: backend/src/services/EducaOnline.Conteudo.API/Dockerfile
+        container_name: educaonline-conteudo-api
+        ports:
+            - "5105:8080"
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Docker
+            - ASPNETCORE_URLS=http://+:8080
+            - ConnectionStrings__DefaultConnection=Data Source=/app/data/ConteudoDatabase.db
+            - MessageQueueConnection__MessageBus=host=rabbitmq:5672;username=guest;password=guest;publisherConfirms=true;timeout=30
+            - JwtSettings__Segredo=476a7f12-61d4-4ef9-92c5-7420e69e0c83
+            - JwtSettings__HorasParaExpirar=2
+            - JwtSettings__Emissor=EducaOnline
+            - JwtSettings__Audiencia=https://localhost
+        depends_on:            
+            conteudo-migrate:
+                condition: service_completed_successfully
+        networks:
+            - educaonline-network
+        volumes:
+            - sqlite_conteudo:/app/data
+        restart: unless-stopped
+        
+    bff:
+        build:
+            context: .
+            dockerfile: backend/src/api_gateways/EducaOnline.Bff/Dockerfile
+        container_name: educaonline-bff
+        ports:
+            - "5051:8080"
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Docker
+            - ASPNETCORE_URLS=http://+:8080            
+            - MessageQueueConnection__MessageBus=host=rabbitmq:5672;username=guest;password=guest;publisherConfirms=true;timeout=30
+            - JwtSettings__Segredo=476a7f12-61d4-4ef9-92c5-7420e69e0c83
+            - JwtSettings__HorasParaExpirar=2
+            - JwtSettings__Emissor=EducaOnline
+            - JwtSettings__Audiencia=https://localhost
+        depends_on:            
+            identidade-api:
+                condition: service_started
+            aluno-api:
+                condition: service_started
+            pedidos-api:
+                condition: service_started
+            financeiro-api:
+                condition: service_started
+            conteudo-api:
+                condition: service_started
+        networks:
+            - educaonline-network        
+        restart: unless-stopped       
         
 volumes:
   rabbitmq_data:
