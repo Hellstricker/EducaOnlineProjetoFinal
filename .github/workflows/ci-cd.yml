@@ -82,9 +82,11 @@ jobs:
                context: .
                file: ${{ matrix.dockerfile }}
                push: true
-               tags: ${{ steps.meta.outputs.tags }}
-               labels: ${{ steps.meta.outputs.labels }}
+               tags: |
+                 ${{ secrets.DOCKERHUB_USERNAME }}/educaonline-${{ matrix.service }}:latest
+                 ${{ secrets.DOCKERHUB_USERNAME }}/educaonline-${{ matrix.service }}:${{ github.sha }}
                cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/educaonline-${{ matrix.service }}:latest
                cache-to: type=inline
-               build-args: BUILD_CONFIGURATION=Release
+               build-args: |
+                 BUILD_CONFIGURATION=Release
  
